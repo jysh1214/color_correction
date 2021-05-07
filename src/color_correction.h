@@ -11,6 +11,8 @@
 #include <iostream>
 #include <math.h>
 
+#include "hist.h"
+
 #ifdef CUDA
 #include <cuda.h>
 #include <cuda_runtime.h>
@@ -25,24 +27,6 @@ extern "C" float* cuda_pn(const float*, int, int, unsigned int);
 extern "C" void cuda_calc(const cv::Mat&, cv::Mat&, float*, float*);
 extern "C" cv::Mat cuda_agcwd(const cv::Mat&, float, bool);
 #endif
-
-static
-void getHistValue(const cv::Mat& src, std::vector<float>& histValue, const int size)
-{
-    assert(src.type() == CV_8U);
-    assert(src.channels() == 1);
-
-    const int channels[1] = {0};
-    int histSize[1] = {size};
-
-    float hrange[2] = {0, (float)size};
-    const float* range[1] = {hrange};
-    cv::Mat histMat;
-    cv::calcHist(&src, 1, channels, cv::Mat(), histMat, 1, histSize, range);
-
-    for (int i = 0; i < size; i++)
-        histValue.push_back(histMat.at<float>(i, 0));
-}
 
 static
 void getCDF(const std::vector<float>& hist, std::vector<float>& cdf)
